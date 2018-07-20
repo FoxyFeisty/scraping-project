@@ -38,7 +38,7 @@ nav li {
 	background-color: white;
     padding: 0.5em;
     text-align: center;
-    margin: 0.2em;
+    margin-right: 0.4em;
     display: inline;
     cursor: pointer;
 }
@@ -49,12 +49,26 @@ nav li:hover {
 
 /*	02	Klassen
 /******************************/
+.nav-on {
+	background-color: black;
+	color: white;
+}
+.nav-off {
+	background-color: white;
+	color: black;
+}
 .button {
 	background-color: darkgrey;
-	padding: 1em;
-	color: white;
-	font-size: 1em;
-	/*border: 1px solid white;*/
+    padding: 0.5em;
+    color: white;
+    box-shadow: 2px 2px 1px #424242;
+    font-size: 1em;
+    margin-right: 0.3em;
+    cursor: pointer;
+    border: none;
+}
+.button:focus {
+	outline: none;
 }
 .hidden {
 	display: none;
@@ -62,15 +76,30 @@ nav li:hover {
 .blockDiv {
 	background-color: white;
 	padding: 0.5em;
+	box-shadow: 4px 4px 2px darkgrey;
+	width: fit-content;
 }
-
+.list {
+	box-shadow: 4px 4px 2px #ffa501;
+}
+.list-items {
+	box-shadow: 1px 2px 1px;
+}
+.detail {
+	background-color: white;
+	padding: 1em;
+}
+.delete {
+	background-color: red;
+	border : 3px solid red;
+}
 
 /*	03	IDs
 /******************************/
-#start {
+/*#start {
 	background-color: black;
 	color: white;
-}
+}*/
 
 #divStore, #divMenue {
 	display: none;
@@ -84,14 +113,15 @@ nav li:hover {
 	padding: 0;
 }
 #allMenues li {
+	/*border: 3px solid orange;*/
 	cursor: pointer;
 	padding: 0.5em;
     background-color: orange;
-    border: 3px solid orange;
     margin-bottom: 0.8em;
     margin-top: 1em;
 	list-style: none;
 	font-size: 1.5em;
+	box-shadow: 2px 3px 2px;
 }
 }
 #allMenues > * {
@@ -132,21 +162,28 @@ nav li:hover {
 }
 #btnDiv {
 	margin-top: 0.5em;
-}
+    margin-bottom: 2em;}
 #fehler {
 	margin-top: 1em;
 	display: inline-block;
 }
-#fehler > * {
+#fehler * {
 	/*padding: 0.5em;*/
+	font-size: 1em;
+}
+#fehler p {
+	border: 1px solid #0034ee;
 }
 #fehler > div {
 	background-color: white;
-	margin: 1em;
-	border: 4px solid red;
+	/*margin: 1em;
+	border: 4px solid red;*/
+
 }
 #fehler div {
-	border: 2px solid black;
+	border: 1.5px solid #0034ee;
+    margin: 0.5em;
+	/*border: 2px solid black;*/
 }
 #reminder * {
 	text-align: left;
