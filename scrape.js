@@ -29,6 +29,7 @@ var navStart = document.getElementById("start"),
 	inputArr = new Array(),
 	urlArr = new Array(),
 	test = "",
+	toggleVar = "stop",
 	menueNameVar = "";
 
 // AJAX-Verbindung
@@ -216,7 +217,7 @@ function scrapeElem(e) {
 }
 // Liste der Mittagskarten anzeigen
 function showMenues() {
-	x = scrapeObj.getDataStorage();
+	var x = scrapeObj.getDataStorage();
 	// Doppelerstellung der Listenpunkte vermeiden
 	if (allMenues.children.length > 0) {
 		allMenues.removeChild(allMenues.childNodes[0]);
@@ -225,16 +226,22 @@ function showMenues() {
 		liMenue = document.createElement("ul");
 	// }
 	// Listenpunkte aus LocalStorage generieren
-	for (i=0; i<x.menueName.length; i++) {
-		liItem = document.createElement("li");
-		t = document.createTextNode(x.menueName[i]);
-		liItem.appendChild(t);
-		liMenue.appendChild(liItem);
+	if (x !== null) {
+		for (i=0; i<x.menueName.length; i++) {
+			var liItem = document.createElement("li");
+			var t = document.createTextNode(x.menueName[i]);
+			liItem.appendChild(t);
+			// data-Attribut gleich mit Position in LocalStorage-Array (für Löschvorgang)
+			var att = document.createAttribute("data");   
+			att.value = i;
+			liItem.setAttributeNode(att); 
+			liMenue.appendChild(liItem);
+		}
+		allMenues.appendChild(liMenue); 
 	}
-	allMenues.appendChild(liMenue);
 }
 // Inhalt der Mittagskarten anzeigen
-function showSingleMenue(e) {
+function showMenueDetail(e) {
 	var liItems = allMenues.children[0].children;
 	if (e.target !== e.currentTarget) {
 		for (i=0; i<liItems.length; i++) {
@@ -271,28 +278,74 @@ function updateMenues() {
 	scrapeObj.updateData();
 }
 
-
-// Mittagskarten löschen
-function deleteMenues() {
-	listAll = divMenue.children[lengthChildren-1].children[0].children;
-	obj = scrapeObj.getDataStorage();
-	var arr = obj.menueName;
-	// var i = arr.indexOf(listAll[0].innerHTML);
-
-
-	for (i=0; i<listAll.length; i++) {
-		listAll[i].style.backgroundColor = "red";
-		listAll[i].style.border = "3px dashed black";
-		listAll[i].innerHTML = listAll[i].innerHTML + " löschen";
+// Einträge aus Menü-Liste löschen
+function deleteMenues(e) {
+	// Daten aus LocalStorage auslesen
+	var obj = scrapeObj.getDataStorage();
+	// Pos aus Listen-Data-Attribute ermitteln
+	pos = e.target.getAttribute('data');
+	// Element aus Array löschen
+	obj.menueName.splice(pos, 1);
+	obj.menueText.splice(pos, 1);
+	obj.classItem.splice(pos, 1);
+	obj.posItem.splice(pos, 1);
+	obj.url.splice(pos, 1);
+	// LocalStorage mit neuem Array überschreiben
+	localStorage.setItem('scrapeData', JSON.stringify(obj));
+	// // überprüfen, ob nur noch ein Element
+	// if (obj.menueName.length == 1) {
+	// 	toggleVar = "select";
+	// }
+	if (obj.menueName.length > 0) {
+		// Liste neu generieren
+		showMenues();
+		// Lösch-Style anwenden
+		deleteStyle();
+	} else {
+		selectMenues();
 	}
-	// div = document.createElement("div");
-	// t = document.createTextNode("Klicke auf eine Mittagskarte, um sie zu löschen.");
-	// div.appendChild(t);
-	// divMenue.insertBefore(div, allMenues);
-
-	console.log(arr);
-
 }
+
+// Löschansicht in Menü-Liste
+function deleteStyle() {
+// wenn Detailansicht ausgeklappt, dann diese löschen
+if (divMenue.children.length > lengthChildren) {
+	divMenue.removeChild(divMenue.children[lengthChildren]);
+}
+// Listenansicht verändern
+listAll = divMenue.children[lengthChildren-1].children[0].children;
+for (i=0; i<listAll.length; i++) {
+	listAll[i].style.backgroundColor = "red";
+	listAll[i].style.border = "3px dashed black";
+	listAll[i].innerHTML = listAll[i].innerHTML + " löschen";
+}
+
+
+
+
+// div = document.createElement("div");
+// t = document.createTextNode("Klicke auf eine Mittagskarte, um sie zu löschen.");
+// div.appendChild(t);
+// divMenue.insertBefore(div, allMenues);
+}
+
+// Toggle-Variable und Button-Beschriftung ändern
+function selectMenues() {
+	if (toggleVar == "stop" && allMenues.children[0].children.length > 0) {
+		toggleVar = "delete";
+		selectBtn.innerHTML = "Fertig"
+		allMenues.removeEventListener('click', showMenueDetail);
+		allMenues.addEventListener('click', deleteMenues);
+		deleteStyle();
+	} else {
+		toggleVar = "stop";
+		selectBtn.innerHTML = "Einträge löschen"
+		allMenues.removeEventListener('click', deleteMenues);
+		allMenues.addEventListener('click', showMenueDetail);
+		showMenues();
+	}
+}
+
 
 
 // Unterfunktionen für Menü-Buttons ...
@@ -341,10 +394,6 @@ function showMenue(e) {
 	showMenues();
 }
 
-function selectMenues() {
-	console.log('ok');
-}
-
 // Event-Listener für ...
 
 // ... Menü-Buttons
@@ -362,8 +411,16 @@ deleteBtn.addEventListener('click', function (e) {
 	urlInput.value = "";
 	fehlerDiv.innerHTML = "";
 });
+
 // Einträge aktualisieren
-selectBtn.addEventListener('click', deleteMenues );
+// if (toggleVar == "delete") {
+// 	selectBtn.removeEventListener('click', stopDelete );
+selectBtn.addEventListener('click', selectMenues );
+// } else if (toggleVar == "stop") {
+// 	selectBtn.removeEventListener('click', deleteMenues );
+// 	selectBtn.addEventListener('click', stopDelete );
+// }
+
 // Ausgewählten Scraping-Bereich speichern
 uploadBtn.addEventListener('click', storeElem);
 
@@ -372,7 +429,7 @@ uploadBtn.addEventListener('click', storeElem);
 // Bereich zum Anklicken beim Scrapen
 fehlerDiv.addEventListener('click', scrapeElem);
 // Menü-Listenpunkte
-allMenues.addEventListener('click', showSingleMenue);
+allMenues.addEventListener('click', showMenueDetail);
 
 }());
 
