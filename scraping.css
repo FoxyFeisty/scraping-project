@@ -5,7 +5,6 @@
 	01	Allgemein
 	02	Klassen
 	03	IDs
-	04	Media Queries
 
 ******************************/
 
@@ -21,9 +20,11 @@ body {
 }
 h1 {
 	font-size: 2em;
+	margin-bottom: 0.5em;
 }
 input {
 	padding: 1em;
+	font-size: 1em;
 }
 nav ul {
 	font-size: 2em;
@@ -32,11 +33,12 @@ nav ul {
  	margin: 0;
   	padding: 0;
   	list-style: none;
-	margin-bottom: 1.5em;
+	margin-bottom: 1em;
 }
 nav li {
 	background-color: white;
-    padding: 0.5em;
+    padding: 0.2em;
+    margin-bottom: 0.3em;
     text-align: center;
     margin-right: 0.4em;
     display: inline;
@@ -88,6 +90,8 @@ nav li:hover {
 .detail {
 	background-color: white;
 	padding: 1em;
+	/*max-width: 700px;*/
+	width: fit-content;
 }
 .delete {
 	background-color: red;
@@ -96,11 +100,6 @@ nav li:hover {
 
 /*	03	IDs
 /******************************/
-/*#start {
-	background-color: black;
-	color: white;
-}*/
-
 #divStore, #divMenue {
 	display: none;
 }
@@ -128,16 +127,12 @@ nav li:hover {
 	background-color: white;
 	padding: 1em;
 }
-
-#uploadDiv {
-	display: none;
-}
 #urlBtn {
 	background-color: orange;
 	color: black;
-	/*border: 1px solid black;*/
 }
 #uploadDiv {
+	display: none;
 	text-align: center;
 	background-color: lightgrey;
 	margin-top: 1em;
@@ -150,8 +145,10 @@ nav li:hover {
 #urlInput {
 	width: 90%;
 	max-width: 1000px;
-    padding: 1.5em;
     margin-bottom: 1.5em;
+}
+#urlInput:active, #urlInput:focus-within, #urlInput:focus {
+	background-color: white !important;
 }
 #uploadBtn {
 	/*display: none;*/
@@ -162,28 +159,24 @@ nav li:hover {
 }
 #btnDiv {
 	margin-top: 0.5em;
-    margin-bottom: 2em;}
+    margin-bottom: 2em;
+}
 #fehler {
 	margin-top: 1em;
 	display: inline-block;
 }
 #fehler * {
-	/*padding: 0.5em;*/
 	font-size: 1em;
 }
 #fehler p {
-	border: 1px solid #0034ee;
+	border: 1px solid black;
 }
 #fehler > div {
 	background-color: white;
-	/*margin: 1em;
-	border: 4px solid red;*/
-
 }
 #fehler div {
-	border: 1.5px solid #0034ee;
-    margin: 0.5em;
-	/*border: 2px solid black;*/
+	border: 1px solid black;
+    margin: 0.3em;
 }
 #reminder * {
 	text-align: left;
@@ -191,11 +184,16 @@ nav li:hover {
     margin-bottom: 0;
     margin-top: 0.8em;
 }
-/*#fehler > p {
-	background-color: pink;
-}*/
+#loadSVG {
+	font-size: 20em;
+	text-align: center;
+	position: fixed;
+	top: 30%;
+    left: 35%;
+	animation: change 1s linear infinite alternate;
+}
+@keyframes change {
+	from {color: black;}
+    to {color: orange;}
+}
 
-
-
-/*	04	Media Queries
-/******************************/

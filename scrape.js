@@ -7,12 +7,14 @@ var navStart = document.getElementById("start"),
 	divStart = document.getElementById("divStart"),
 	divStore = document.getElementById("divStore"),
 	divMenue = document.getElementById("divMenue"),
+	loadSVG = document.getElementById("loadSVG"),
 	divMessage = document.getElementById("divMessage"),
+	divMessage2 = document.getElementById("divMessage2"),
 	urlInput = document.getElementById("urlInput"),
 	urlBtn = document.getElementById("urlBtn"),
 	uploadDiv = document.getElementById("uploadDiv"),
 	uploadForm = document.getElementById("uploadForm"),
-	menueName = document.getElementById("menueName"),
+	inputName = document.getElementById("menueName"),
 	reminder = document.getElementById("reminder"),
 	uploadBtn = document.getElementById("uploadBtn"),
 	fehlerDiv = document.getElementById("fehler"),
@@ -23,84 +25,49 @@ var navStart = document.getElementById("start"),
 	lengthChildren = divMenue.children.length,	// abhängig von Button-Anzahl darüber
 	clickedItem,
 	posInArr,
-	classItem,		// evtl. nicht global
-	menueText,		// evtl. nicht global
-	posItem,		// evtl. nicht global
+	classItem,		
+	menueText,		
+	posItem,		
 	test = "",
 	toggleVar = "stop",
 	toggleVar2 = "stop";
 
 // Objekt zum Speichern und Auslesen der Mittagskarten im LocalStorage
 function Menue() {
-	var scrapeData = {
+	this.scrapeData = {
 			"menueName" : [],
 			"url" : [],
 			"classItem" : [],
 			"posItem" : [],
 			"menueText" : []
 		},
-		that = this;
+	that = this;
 
 	this.returnData = function() {
-		return scrapeData;
+		return that.scrapeData;
 	}
 	// Aktuelle Menü-Daten im LocalStorage speichern
 	this.storeData = function(place, page, css, pos, txt) {
-		that.returnData();
-		scrapeData.menueName.push(place);
-		scrapeData.url.push(page);
-		scrapeData.classItem.push(css);
-		scrapeData.posItem.push(pos);
-		scrapeData.menueText.push(txt);
-		localStorage.setItem('scrapeData', JSON.stringify(scrapeData));
-	}
-	// this.updateText = function(nameStr, txt) {
-	// 	that.getDataStorage();
-	// 	var arr = scrapeData.menueName;
-	// 	var pos = arr.indexOf(nameStr);
-	// 	scrapeData.menueText.splice(pos, 1);
-	// 	scrapeData.menueText.splice(pos, 0, txt);
-	// }
-	this.updateText = function(pos, txt) {
-		that.returnData();
-		scrapeData.menueText[pos] = txt;
-		localStorage.setItem('scrapeData', JSON.stringify(scrapeData));
+		console.log("1: ", that.scrapeData);
+		that.scrapeData.menueName.push(place);
+		that.scrapeData.url.push(page);
+		that.scrapeData.classItem.push(css);
+		that.scrapeData.posItem.push(pos);
+		that.scrapeData.menueText.push(txt);
+		localStorage.setItem('scrapeData', JSON.stringify(that.scrapeData));
+		console.log('storeData: in LocalStorage gespeichert.');
 	}
 	// Gesamtes Menü auslesen
 	this.getDataStorage = function() {
-		scrapeData = JSON.parse(localStorage.getItem("scrapeData"));
-		return scrapeData;
+		that.scrapeData = JSON.parse(localStorage.getItem("scrapeData"));
+		return that.scrapeData;
 	}
-
-	// einzelnen Eintrag auslesen über Parameter 'menueName.value'
-	// this.getSingleData = function(nameStr) {
-	// 	that.getDataStorage();
-	// 	var arr = scrapeData.menueName;
-	// 	var i = arr.indexOf(nameStr);
-	// 	var singleData = {
-	// 		"menueName" : scrapeData.menueName[i],
-	// 		"url" : scrapeData.url[i],
-	// 		"classItem" : scrapeData.classItem[i],
-	// 		"posItem" : scrapeData.posItem[i],
-	// 		"menueText" : scrapeData.menueText[i]
-	// 	};
-	// 	return singleData;
-	// }
-	this.updateData = function() {
-		// that.getDataStorage();
-		// test = "update";
-		// var arr = scrapeData.menueName;
-
-		// var page = scrapeData.url;
-			// menueNameVar = scrapeData.menueName[i];
-			// sendData(page);
-		
-		// that.getDataStorage();
-		// var arr = scrapeData.menueName;
-		// var i = arr.indexOf(nameStr);
-		// var page = scrapeData.url[i];
-		// sendData(page);
-		// test = "update";
+	// Karte updaten
+	this.updateText = function(pos, txt) {
+		// that.returnData();
+		that.scrapeData.menueText[pos] = txt;
+		localStorage.setItem('scrapeData', JSON.stringify(that.scrapeData));
+		console.log('updateText: LocalStorage überschrieben.')
 	}
 }
 // Objekt initialisieren
@@ -113,16 +80,41 @@ ajaxhttp.onreadystatechange = function() {
 		if (ajaxhttp.responseText && test == "download") {
 			fehler.style.display = "inline";
 			fehler.innerHTML = ajaxhttp.responseText;
+			loadSVG.classList.add("hidden");
 		}
 		if (ajaxhttp.responseText && test == "update") {
+			console.log(ajaxhttp.responseText);
+			// Gesamte Website mit LocalStorage-Infos filtern
 			var div = document.createElement("div");
 			div.innerHTML = ajaxhttp.responseText;	// innerHTML (statt textNode) für "getElementsByClassName"-Methode
 			var arr = div.getElementsByClassName(classItem);
-			console.log(arr);
-			var textNeu = arr[posItem].outerText;
+			var textNeu = arr[posItem].innerHTML;
+			// Text in LocalStorage aktualisieren
 			scrapeObj.updateText(posInArr, textNeu);
-			/* ########### TBD ###### */
+			// Meldung für User ausgeben
+			var obj = scrapeObj.returnData();
+			// wenn noch kein Meldungs-Div hinzugefügt
+			if ((divMenue.children.length-lengthChildren) <= 0) {
+				var noteDiv = document.createElement("div");
+				noteDiv.innerHTML = "'"+obj.menueName[posInArr]+"' wurde aktualisiert.<br>";
+				noteDiv.classList.add("detail");
+				divMenue.appendChild(noteDiv);
+			} else {
+				var noteDiv = divMenue.lastElementChild;
+				var str = obj.menueName[posInArr];
+				// Test, ob Karte bereits aktualisiert & Meldung vorhanden
+				if (noteDiv.innerHTML.indexOf(str) == -1) {
+					newDiv = document.createElement("div");
+					t = document.createTextNode("'"+obj.menueName[posInArr]+"' wurde aktualisiert.");
+					newDiv.appendChild(t);
+					noteDiv.appendChild(newDiv);
+				}
+			}
+			loadSVG.classList.add("hidden");
 		}
+	} 
+	else {
+		loadSVG.classList.add("hidden");
 	}
 }
 // Daten in FormData() speichern und an Server senden
@@ -132,12 +124,15 @@ function sendData(input) {
 	urlData.set('test', test);
 	ajaxhttp.open('POST', 'sendURL.php', true);
 	ajaxhttp.send(urlData);
+	loadSVG.classList.remove("hidden");
 }
 // mit Upload-Button URL senden und Seiteninhalt anfordern
 function uploadURL() {
 	// Test-Variable für ajaxhttp-Weiche
 	test = "download";
 	sendData(urlInput.value);
+	// evtl. Fehlermeldung ausblenden
+	fehlerDiv.innerHTML = "";
 	// UploadDiv sichtbar machen
 	uploadDiv.style.display = "inline-block";
 	uploadForm.style.display = "block";
@@ -147,6 +142,7 @@ function errorMessage(str, obj) {
 	var p = document.createElement("p"),
 		t = document.createTextNode(str);
 	p.appendChild(t);
+	p.classList.add("detail");
 	obj.appendChild(p);
 	obj.style.display = "inline";
 }
@@ -161,7 +157,6 @@ function testURL() {
 		uploadURL();
 	}
 }
-
 // User-Eingaben prüfen und im LocalStorage speichern
 function storeElem(e) {
 	// Prüfung der Usereingaben
@@ -169,11 +164,12 @@ function storeElem(e) {
 	if (classItem == undefined || posItem == undefined) {
 		errorMessage("Bitte wähle unten einen Bereich aus.", reminder);
 	} 
-	if (menueName.value === '') {
+	else if (inputName.value === '') {
 		errorMessage("Vergiss nicht das Lokal.", reminder);
 	}
 	else {
-		scrapeObj.storeData(menueName.value, urlInput.value, classItem, posItem, menueText);
+		scrapeObj.returnData();
+		scrapeObj.storeData(inputName.value, urlInput.value, classItem, posItem, menueText);
 		urlInput.value = "";
 		menueName.value = "";
 		uploadDiv.style.display = "none";
@@ -184,13 +180,15 @@ function storeElem(e) {
 }
 // User-Auswahl auf geladenen Inhalten
 function scrapeElem(e) {
+	fehlerDiv.removeEventListener('mouseover', styleElem );
+	fehlerDiv.removeEventListener('mouseout', unStyleElem );
 	var	allElemArr = new Array();
 	// farbige Markierung für User
 	if (clickedItem !== undefined) {
 		clickedItem.style.backgroundColor = "transparent";
 	} 
 	if (e.target !== e.currentTarget) {
-		e.target.style.backgroundColor = "yellow";
+		e.target.style.backgroundColor = "orange";
 		// Klasse des angeklickten Bereichs speichern
 		clickedItem = e.target,
 		classItem = e.target.className;
@@ -204,9 +202,10 @@ function scrapeElem(e) {
 			}
 		}
 		// Text des angeklickten Bereichs speichern
-		menueText = e.target.outerText;
+		menueText = e.target.innerHTML;
 	}
 }
+
 // Liste der Mittagskarten anzeigen
 function showMenues() {
 	var x = scrapeObj.getDataStorage();
@@ -228,6 +227,7 @@ function showMenues() {
 			liMenue.appendChild(liItem);
 		}
 		allMenues.appendChild(liMenue); 
+		allMenues.addEventListener('click', showMenueDetail);
 	}
 }
 // Inhalt der Mittagskarten anzeigen
@@ -250,7 +250,12 @@ function showMenueDetail(e) {
 		var arr = x.menueName;
 		var i = arr.indexOf(clickedList);
 		var div = document.createElement("div");
-		div.innerText = x.menueText[i];
+		// Test, ob Text gespeichert wurde
+		if (x.menueText[i] !== "") {
+			div.innerHTML = x.menueText[i];
+		} else {
+			div.innerHTML = "Dieses Menü ist leer.";
+		}
 		div.classList.add("detail");
 		// doppelte Einträge vermeiden 
 		if (divMenue.children.length > lengthChildren) {
@@ -261,10 +266,8 @@ function showMenueDetail(e) {
 		e.stopPropagation();
 	}
 }
-
 // Mittagskarten aktualisieren
 function updateMenues(e) {
-	console.log('ok');
 	// Daten aus LocalStorage auslesen
 	var obj = scrapeObj.getDataStorage();
 	// Pos aus Listen-Data-Attribute ermitteln
@@ -273,7 +276,13 @@ function updateMenues(e) {
 	test = "update";
 	posItem = obj.posItem[posInArr];
 	classItem = obj.classItem[posInArr];
-	sendData(urlItem);
+	// Überprüfen, ob bei gespeichertem Menü Klasse vorhanden
+	if (classItem !== '') {
+		sendData(urlItem);
+	} else {
+		divMenue.style.display = "none";
+		divMessage2.style.display = "inline";	
+	}
 }
 // Geänderte Ansicht in Menü-Liste bei Löschen/Bearbeiten
 function changeStyle() {
@@ -311,6 +320,7 @@ function deleteMenues(e) {
 	obj.url.splice(pos, 1);
 	// LocalStorage mit neuem Array überschreiben
 	localStorage.setItem('scrapeData', JSON.stringify(obj));
+	console.log('deleteMenues: localStorage überschrieben');
 	// wenn mindestens 1 Element im LocalStorage gespeichert ist
 	if (obj.menueName.length > 0) {
 		// Liste neu generieren
@@ -321,8 +331,6 @@ function deleteMenues(e) {
 		selectMenues();
 	}
 }
-
-
 // Toggle-Variable und Button-Beschriftung ändern
 function selectMenues(e) {
 	if (e.target === selectBtn) {
@@ -358,12 +366,26 @@ function selectMenues(e) {
 			newBtn.innerHTML = "Aktualisieren"
 			allMenues.removeEventListener('click', updateMenues);
 			allMenues.addEventListener('click', showMenueDetail);
+			// Update-Meldung löschen
+			if ((divMenue.children.length-lengthChildren) > 0) {
+				divMenue.removeChild(divMenue.lastElementChild);
+			}
 			showMenues();
 		}
 	}
 }
 
-
+// Mouseover-Eventfunktionen bei Auswahl des Scraping-Bereichs
+function styleElem(e) {
+	if (e.target !== e.currentTarget) {
+		e.target.style.backgroundColor = "lightgrey";	
+	}
+}
+function unStyleElem(e) {
+	if (e.target !== e.currentTarget) {
+		e.target.style.backgroundColor = "";	
+	}
+}
 
 // Unterfunktionen für Menü-Buttons ...
 // ... "Mein Menü" auf "0" setzen bei Wechsel in Navigation
@@ -379,15 +401,18 @@ function unsetMenue() {
 function unsetBtn() {
 	selectBtn.innerHTML = "Einträge löschen";
 	newBtn.innerHTML = "Aktualisieren";
+	allMenues.removeEventListener('click', deleteMenues);
+	allMenues.removeEventListener('click', updateMenues);
 	toggleVar = "stop";
 	toggleVar2 = "stop";
 }
 // ... nav-Menüpunkte ein- und ausblenden
-function divStyle(inlineElem, elem2, elem3, elem4) {
+function divStyle(inlineElem, elem2, elem3, elem4, elem5) {
 	inlineElem.style.display = "inline";
 	elem2.style.display = "none";
 	elem3.style.display = "none";
 	elem4.style.display = "none";
+	elem5.style.display = "none";
 }
 // ... nav-Menüpunkte stylen
 function navStyle(e, arr) {
@@ -401,27 +426,28 @@ function navStyle(e, arr) {
 		}
 	}
 }
+
 // Event-Funktionen für Menü-Buttons
 function showStart(e) {
-	divStyle(divStart, divMessage, divStore, divMenue);
+	divStyle(divStart, divMessage, divMessage2, divStore, divMenue);
 	navStyle(e, navArr);
 	unsetMenue();
 	unsetBtn();
 }
 function showStore(e) {
-	divStyle(divStore, divMessage, divStart, divMenue);
+	divStyle(divStore, divMessage, divMessage2, divStart, divMenue);
 	navStyle(e, navArr);
 	unsetMenue();
 	unsetBtn();
 }
 function showMenue(e) {
-	divStyle(divMenue, divMessage, divStore, divStart);
+	divStyle(divMenue, divMessage, divMessage2, divStore, divStart);
 	navStyle(e, navArr);
+	unsetBtn();
 	showMenues();
 }
 
 // Event-Listener für ...
-
 // ... Menü-Buttons
 navStart.addEventListener('click', showStart);
 navStore.addEventListener('click', showStore);
@@ -434,32 +460,23 @@ urlBtn.addEventListener('click', testURL);
 deleteBtn.addEventListener('click', function (e) { 
 	urlInput.value = "";
 	fehlerDiv.innerHTML = "";
+	uploadDiv.style.display = "none";
 });
-
 // Menü-Einträge zum Aktualisieren freigeben
 newBtn.addEventListener('click', selectMenues);
-
 // Menü-Einträge zum Löschen freigeben
 selectBtn.addEventListener('click', selectMenues);
-
 // Ausgewählten Scraping-Bereich speichern
 uploadBtn.addEventListener('click', storeElem);
-
 
 // ... Sonstiges
 // Bereich zum Anklicken beim Scrapen
 fehlerDiv.addEventListener('click', scrapeElem);
+// Hover-Effekt für aktuellen Scraping-Bereich
+fehlerDiv.addEventListener('mouseover', styleElem);
+// Scraping-Hover-Effekt zurücksetzen
+fehlerDiv.addEventListener('mouseout', unStyleElem);
 // Menü-Listenpunkte
 allMenues.addEventListener('click', showMenueDetail);
 
 }());
-
-
-// ####### NOTES ########## 
-
-// ####### Weitere Attribute von 'e' (Event) ######### 
-// itemFirstChild = e.target.firstElementChild,
-// itemLastChild = e.target.lastElementChild,
-// itemPreviousElementSibling = e.target.previousElementSibling;
-// classItemArr = e.target.classList; // Array mit einzelnen Klassen
-// itemStyle = e.target.attributes[2].value; // "background-color: yellow;"
