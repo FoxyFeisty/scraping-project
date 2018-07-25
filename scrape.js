@@ -49,6 +49,7 @@ function Menue() {
 	// Aktuelle Menü-Daten im LocalStorage speichern
 	this.storeData = function(place, page, css, pos, txt) {
 		console.log("1: ", that.scrapeData);
+		console.log("2: ", scrapeObj);
 		that.scrapeData.menueName.push(place);
 		that.scrapeData.url.push(page);
 		that.scrapeData.classItem.push(css);
@@ -83,7 +84,6 @@ ajaxhttp.onreadystatechange = function() {
 			loadSVG.classList.add("hidden");
 		}
 		if (ajaxhttp.responseText && test == "update") {
-			console.log(ajaxhttp.responseText);
 			// Gesamte Website mit LocalStorage-Infos filtern
 			var div = document.createElement("div");
 			div.innerHTML = ajaxhttp.responseText;	// innerHTML (statt textNode) für "getElementsByClassName"-Methode
@@ -175,7 +175,9 @@ function storeElem(e) {
 		uploadDiv.style.display = "none";
 		fehlerDiv.innerHTML = "";
 		divStore.style.display = "none";
-		divMessage.style.display = "inline";	
+		divMessage.style.display = "inline";
+		fehlerDiv.addEventListener('mouseover', styleElem );
+		fehlerDiv.addEventListener('mouseout', unStyleElem );
 	}
 }
 // User-Auswahl auf geladenen Inhalten
@@ -306,8 +308,10 @@ function changeStyle() {
 		}
 	}
 }
+
 // Einträge aus Menü-Liste löschen
 function deleteMenues(e) {
+	console.log("deleteMenues", e);
 	// Daten aus LocalStorage auslesen
 	var obj = scrapeObj.getDataStorage();
 	// Pos aus Listen-Data-Attribute ermitteln
@@ -328,9 +332,15 @@ function deleteMenues(e) {
 		// Lösch-Style anwenden
 		changeStyle();
 	} else {
-		selectMenues();
+		// alle Elemente gelöscht
+		toggleVar = "stop";
+		selectBtn.innerHTML = "Löschen";
+		showMenues();
+		allMenues.removeEventListener('click', deleteMenues);
+		allMenues.addEventListener('click', showMenueDetail);
 	}
 }
+
 // Toggle-Variable und Button-Beschriftung ändern
 function selectMenues(e) {
 	if (e.target === selectBtn) {
@@ -339,19 +349,19 @@ function selectMenues(e) {
 		}
 		if (toggleVar == "stop" && allMenues.children[0].children.length > 0) {
 			toggleVar = "delete";
-			selectBtn.innerHTML = "Fertig"
+			selectBtn.innerHTML = "Fertig";
 			allMenues.removeEventListener('click', showMenueDetail);
 			allMenues.addEventListener('click', deleteMenues);
 			changeStyle();
-		} else {
+		} else if (allMenues.children[0].children.length > 0) {
 			toggleVar = "stop";
-			selectBtn.innerHTML = "Einträge löschen"
+			selectBtn.innerHTML = "Einträge löschen";
 			allMenues.removeEventListener('click', deleteMenues);
 			allMenues.addEventListener('click', showMenueDetail);
 			showMenues();
 		}
 	}
-	if (e.target === newBtn) {
+	else if (e.target === newBtn) {
 		if (toggleVar === "delete") {
 			return
 		}
@@ -374,7 +384,6 @@ function selectMenues(e) {
 		}
 	}
 }
-
 // Mouseover-Eventfunktionen bei Auswahl des Scraping-Bereichs
 function styleElem(e) {
 	if (e.target !== e.currentTarget) {
