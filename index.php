@@ -24,7 +24,7 @@
 					<li>Gehe zur Website deines Lieblingslokals und schau, ob sie eine Mittagskarte online haben.</li>
 					<li>Kopiere den genauen Browserlink und füge ihn hier unter "Karte speichern" ein.</li>
 					<li>Jetzt siehst du die gesamte Seite. Wähle durch Klicken den Bereich mit der Mittagskarte aus.</li>
-					<li>Wenn du mit der gelben Auswahl zufrieden bist, dann gib noch den Namen des Lokals ein, drücke auf "Auswahl speichern" – fertig!</li>
+					<li>Wenn du mit der Auswahl zufrieden bist, dann gib noch den Namen des Lokals ein, drücke auf "Auswahl speichern" – fertig!</li>
 					<li>Deine gesammelten Mittagskarten findest du unter "Mein Menü".</li>
 				</ol>
 			</div>
