@@ -43,13 +43,30 @@ function Menue() {
 		},
 	that = this;
 
+	this.createIt = function() {
+		that.scrapeData = {
+			"menueName" : [],
+			"url" : [],
+			"classItem" : [],
+			"posItem" : [],
+			"menueText" : []
+		}; 
+		// console.log(scrapeData, that.scrapeData);
+		return that.scrapeData;
+
+	}
+
 	this.returnData = function() {
 		return that.scrapeData;
 	}
 	// Aktuelle Menü-Daten im LocalStorage speichern
 	this.storeData = function(place, page, css, pos, txt) {
-		console.log("1: ", that.scrapeData);
-		console.log("2: ", scrapeObj);
+	
+		if (that.scrapeData == null) { 
+			that.createIt();
+		}
+		console.log("scrapeData: ", that.scrapeData);
+
 		that.scrapeData.menueName.push(place);
 		that.scrapeData.url.push(page);
 		that.scrapeData.classItem.push(css);
@@ -57,11 +74,15 @@ function Menue() {
 		that.scrapeData.menueText.push(txt);
 		localStorage.setItem('scrapeData', JSON.stringify(that.scrapeData));
 		console.log('storeData: in LocalStorage gespeichert.');
+		console.log("LocalStorage final: ", that.getDataStorage());
 	}
 	// Gesamtes Menü auslesen
 	this.getDataStorage = function() {
-		that.scrapeData = JSON.parse(localStorage.getItem("scrapeData"));
-		return that.scrapeData;
+		var data = JSON.parse(localStorage.getItem("scrapeData"));
+		if (data !== null) {
+			that.scrapeData = data;
+			return that.scrapeData;
+		} else return
 	}
 	// Karte updaten
 	this.updateText = function(pos, txt) {
@@ -69,6 +90,9 @@ function Menue() {
 		that.scrapeData.menueText[pos] = txt;
 		localStorage.setItem('scrapeData', JSON.stringify(that.scrapeData));
 		console.log('updateText: LocalStorage überschrieben.')
+	}
+	if (this.getDataStorage() !== undefined) {
+		that.scrapeData = this.getDataStorage();
 	}
 }
 // Objekt initialisieren
@@ -211,26 +235,28 @@ function scrapeElem(e) {
 // Liste der Mittagskarten anzeigen
 function showMenues() {
 	var x = scrapeObj.getDataStorage();
-	// Doppelerstellung der Listenpunkte vermeiden
-	if (allMenues.children.length > 0) {
-		allMenues.removeChild(allMenues.childNodes[0]);
-	}
-	liMenue = document.createElement("ul");
-	// Listenpunkte aus LocalStorage generieren
-	if (x !== null) {
-		for (i=0; i<x.menueName.length; i++) {
-			var liItem = document.createElement("li");
-			var t = document.createTextNode(x.menueName[i]);
-			liItem.appendChild(t);
-			// data-Attribut gleich mit Position in LocalStorage-Array (für Löschvorgang)
-			var att = document.createAttribute("data");   
-			att.value = i;
-			liItem.setAttributeNode(att); 
-			liMenue.appendChild(liItem);
+	if (x !== undefined) {
+		// Doppelerstellung der Listenpunkte vermeiden
+		if (allMenues.children.length > 0) {
+			allMenues.removeChild(allMenues.childNodes[0]);
 		}
-		allMenues.appendChild(liMenue); 
-		allMenues.addEventListener('click', showMenueDetail);
-	}
+		liMenue = document.createElement("ul");
+		// Listenpunkte aus LocalStorage generieren
+		if (x !== null) {
+			for (i=0; i<x.menueName.length; i++) {
+				var liItem = document.createElement("li");
+				var t = document.createTextNode(x.menueName[i]);
+				liItem.appendChild(t);
+				// data-Attribut gleich mit Position in LocalStorage-Array (für Löschvorgang)
+				var att = document.createAttribute("data");   
+				att.value = i;
+				liItem.setAttributeNode(att); 
+				liMenue.appendChild(liItem);
+			}
+			allMenues.appendChild(liMenue); 
+			allMenues.addEventListener('click', showMenueDetail);
+		}
+	} else return;
 }
 // Inhalt der Mittagskarten anzeigen
 function showMenueDetail(e) {
@@ -345,7 +371,7 @@ function deleteMenues(e) {
 function selectMenues(e) {
 	if (e.target === selectBtn) {
 		if (toggleVar2 === "updating") {
-			return
+			return;
 		}
 		if (toggleVar == "stop" && allMenues.children[0].children.length > 0) {
 			toggleVar = "delete";
@@ -363,7 +389,7 @@ function selectMenues(e) {
 	}
 	else if (e.target === newBtn) {
 		if (toggleVar === "delete") {
-			return
+			return;
 		}
 		if (toggleVar2 == "stop" && allMenues.children[0].children.length > 0) {
 			toggleVar2 = "updating";
