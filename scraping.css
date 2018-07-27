@@ -1,0 +1,199 @@
+/******************************
+
+	CSS INDEX
+
+	01	Allgemein
+	02	Klassen
+	03	IDs
+
+******************************/
+
+
+/*	01	Allgemein 
+/******************************/
+body {
+	box-sizing: border-box;
+	background-color: lightblue;
+	padding: 1em;
+	font-size: 1em;
+	font-family: Helvetica;	
+}
+h1 {
+	font-size: 2em;
+	margin-bottom: 0.5em;
+}
+input {
+	padding: 1em;
+	font-size: 1em;
+}
+nav ul {
+	font-size: 2em;
+	display: flex;
+  	flex-wrap: wrap;
+ 	margin: 0;
+  	padding: 0;
+  	list-style: none;
+	margin-bottom: 1em;
+}
+nav li {
+	background-color: white;
+    padding: 0.2em;
+    margin-bottom: 0.3em;
+    text-align: center;
+    margin-right: 0.4em;
+    display: inline;
+    cursor: pointer;
+}
+nav li:hover {
+	background-color: black;
+	color: white;
+}
+
+/*	02	Klassen
+/******************************/
+.nav-on {
+	background-color: black;
+	color: white;
+}
+.nav-off {
+	background-color: white;
+	color: black;
+}
+.button {
+	background-color: darkgrey;
+    padding: 0.5em;
+    color: white;
+    box-shadow: 2px 2px 1px #424242;
+    font-size: 1em;
+    margin-right: 0.3em;
+    cursor: pointer;
+    border: none;
+}
+.button:focus {
+	outline: none;
+}
+.hidden {
+	display: none;
+}
+.blockDiv {
+	background-color: white;
+	padding: 0.5em;
+	box-shadow: 4px 4px 2px darkgrey;
+	width: fit-content;
+}
+.list {
+	box-shadow: 4px 4px 2px #ffa501;
+}
+.list-items {
+	box-shadow: 1px 2px 1px;
+}
+.detail {
+	background-color: white;
+	padding: 1em;
+	/*max-width: 700px;*/
+	width: fit-content;
+}
+.delete {
+	background-color: red;
+	border : 3px solid red;
+}
+
+/*	03	IDs
+/******************************/
+#divStore, #divMenue {
+	display: none;
+}
+/*#divMenue * {
+	margin-top: 1em;
+}*/
+#allMenues > ul {
+	display: inline-block;
+	margin-top: 1em;
+	padding: 0;
+}
+#allMenues li {
+	/*border: 3px solid orange;*/
+	cursor: pointer;
+	padding: 0.5em;
+    background-color: orange;
+    margin-bottom: 0.8em;
+    margin-top: 1em;
+	list-style: none;
+	font-size: 1.5em;
+	box-shadow: 2px 3px 2px;
+}
+}
+#allMenues > * {
+	background-color: white;
+	padding: 1em;
+}
+#urlBtn {
+	background-color: orange;
+	color: black;
+}
+#uploadDiv {
+	display: none;
+	text-align: center;
+	background-color: lightgrey;
+	margin-top: 1em;
+	margin-bottom: 1em;
+	padding: 1em;
+}
+#menueName {
+	width: 80%;
+}
+#urlInput {
+	width: 90%;
+	max-width: 1000px;
+    margin-bottom: 1.5em;
+}
+#urlInput:active, #urlInput:focus-within, #urlInput:focus {
+	background-color: white !important;
+}
+#uploadBtn {
+	/*display: none;*/
+	background-color: red;
+	/*width: 80%;*/
+	max-width: 520px;
+	margin-top: 1.5em;
+}
+#btnDiv {
+	margin-top: 0.5em;
+    margin-bottom: 2em;
+}
+#fehler {
+	margin-top: 1em;
+	display: inline-block;
+}
+#fehler * {
+	font-size: 1em;
+}
+#fehler p {
+	border: 1px solid black;
+}
+#fehler > div {
+	background-color: white;
+}
+#fehler div {
+	border: 1px solid black;
+    margin: 0.3em;
+}
+#reminder * {
+	text-align: left;
+    color: red;
+    margin-bottom: 0;
+    margin-top: 0.8em;
+}
+#loadSVG {
+	font-size: 20em;
+	text-align: center;
+	position: fixed;
+	top: 30%;
+    left: 35%;
+	animation: change 1s linear infinite alternate;
+}
+@keyframes change {
+	from {color: black;}
+    to {color: orange;}
+}
+
