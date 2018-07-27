@@ -1,8 +1,8 @@
 # scraping-project
 Single page app to scrape and save lunch menues from webpages
 
-## What it can do
-Tired of checking your favorite restaurant's webpage every monday to see their weekly menue? The single page app "LunchLovers" makes it possible to save and update content from a webpage. 
+## What it was made for
+Tired of checking your favorite restaurant's webpage every monday to see their weekly menue? Well, I was. The single page app "LunchLovers" makes it possible to save and update content from a webpage. 
 
 ## How it works
 - The user needs to copy and paste the exact webpage address into the app
